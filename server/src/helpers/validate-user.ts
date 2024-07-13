@@ -19,7 +19,7 @@ export const validateUser = async (token: string) => {
 
     if (!user) throw new Error("User not found");
 
-    return user;
+    return user.username;
   } catch (error) {
     if (error instanceof jwt.JsonWebTokenError)
       console.log("Invalid token");

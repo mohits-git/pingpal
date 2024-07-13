@@ -3,13 +3,12 @@ import express from 'express';
 import cors from "cors";
 import cookieParser from "cookie-parser"
 import apiRouter from './routes/index.js';
-
-const app = express();
+import { app, server } from "./socket/index.js";
 
 app.use(express.json());
 app.use(cookieParser());
 app.use(cors({
-  origin: process.env.FRONTEND_URL,
+  origin: "*",
   credentials: true
 }));
 
@@ -20,6 +19,6 @@ app.get('/', (req, res) => {
 app.use('/api', apiRouter);
 
 const PORT = process.env.PORT || 8080;
-app.listen(PORT, () => {
+server.listen(PORT, () => {
   console.log(`Listening at port ${PORT}`)
 });
