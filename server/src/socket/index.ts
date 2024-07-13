@@ -30,12 +30,15 @@ io.on('connection', async (socket) => {
   socket.join(username);
   users.add(username);
 
-  socket.emit('new-connection', {
+  socket.emit('update-users', {
     users: Array.from(users)
   });
 
   socket.on('disconnect', () => {
     users.delete(username);
+    socket.emit('update-users', {
+      users: Array.from(users)
+    });
     console.log('user disconnected');
   });
 
