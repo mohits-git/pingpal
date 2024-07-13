@@ -18,12 +18,13 @@ const users = new Set<string>();
 io.on('connection', async (socket) => {
   console.log('a user connected');
 
-  const token = socket.handshake.auth.token;
+  const token = socket.handshake?.auth?.token;
 
   const username = await validateUser(token);
 
   if (!username) {
     socket.disconnect();
+    console.log("Kicked user");
     return;
   }
 
