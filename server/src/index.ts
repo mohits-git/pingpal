@@ -8,7 +8,7 @@ import { app, server } from "./socket/index.js";
 app.use(express.json());
 app.use(cookieParser());
 app.use(cors({
-  origin: "*",
+  origin: process.env.FRONTEND_URL,
   credentials: true
 }));
 
