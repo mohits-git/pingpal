@@ -41,7 +41,7 @@ io.on('connection', async (socket) => {
   }
 
   const updateUsers = () => {
-    socket.emit('update-users', {
+    io.emit('update-users', {
       users: Array
         .from(users)
         .map(([username, { name, description }]) => ({
