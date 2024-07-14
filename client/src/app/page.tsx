@@ -12,6 +12,7 @@ export default function Ping() {
     const token = localStorage.getItem('token');
     if (!token) {
       navigate.push('/login');
+      return;
     }
 
     const verifyLogin = async () => {
