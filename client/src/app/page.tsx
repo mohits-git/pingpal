@@ -4,6 +4,7 @@ import { io, Socket } from "socket.io-client";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import UserCard from "@/components/user-card";
 
 type UsersOnline = {
   name: string;
@@ -66,9 +67,9 @@ export default function Ping() {
       toast(
         `${user.name} pinged ${target}!`,
         {
-          description: "Click here to see user's card and ping back",
+          description: "Click here to ping back",
           action: {
-            label: 'Profile 👀',
+            label: 'Ping Back 👀',
             onClick: () => {
               socketConnection.emit('ping-user', {
                 username: user.username
@@ -120,13 +121,42 @@ export default function Ping() {
     socketConnection.emit('ping');
   }
 
+  const handleSendPingUser = (targetUsername: string) => {
+    if (!socketConnection) {
+      toast.error('Not connected to the server');
+      return;
+    }
+    if (username === targetUsername) {
+      toast.error('You cannot ping yourself');
+      return;
+    }
+    socketConnection.emit('ping-user', {
+      username: targetUsername
+    });
+
+  }
+
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <Button
-        onClick={handleSendPing}
-      >
-        Ping Everyone
-      </Button>
+      <div className="max-w-6xl w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {users?.map(user => (
+          <UserCard
+            key={user.username}
+            username={user.username}
+            name={user.name}
+            description={user.description}
+            handlePingUser={handleSendPingUser}
+          />
+        ))}
+      </div>
+      <div className="absolute bottom-16 left-0 right-0 w-full flex items-center justify-center">
+        <Button
+          onClick={handleSendPing}
+          className="px-8 py-6 text-xl rounded-full"
+        >
+          Ping Everyone 📡
+        </Button>
+      </div>
     </main>
   );
 }
