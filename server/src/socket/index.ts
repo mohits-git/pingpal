@@ -1,5 +1,5 @@
 import { Server } from 'socket.io';
-import { createServer } from 'http';
+import { createServer, get } from 'http';
 import express from "express";
 import { validateUser } from '../helpers/validate-user.js';
 
@@ -13,46 +13,60 @@ const io = new Server(server, {
   }
 });
 
-const users = new Set<string>();
+const users = new Map<string, { name: string, description: string }>();
 
 io.on('connection', async (socket) => {
   console.log('a user connected');
 
   const token = socket.handshake?.auth?.token;
 
-  const username = await validateUser(token);
+  const user = await validateUser(token);
 
-  if (!username) {
+  if (!user?.username) {
     socket.disconnect();
     console.log("Kicked user");
     return;
   }
 
-  socket.join(username);
-  users.add(username);
+  socket.join(user.username);
 
-  socket.emit('update-users', {
-    users: Array.from(users)
+  users.set(user.username, {
+    name: user.name,
+    description: user.description
   });
 
-  socket.on('disconnect', () => {
-    users.delete(username);
+  const getUserInfo = (username: string) => {
+    const { name, description } = users.get(username);
+    return { username, name, description };
+  }
+
+  const updateUsers = () => {
     socket.emit('update-users', {
-      users: Array.from(users)
+      users: Array
+        .from(users)
+        .map(([username, { name, description }]) => ({
+          username,
+          name,
+          description
+        })),
     });
+  }
+
+  updateUsers();
+
+  socket.on('disconnect', () => {
+    users.delete(user.username);
+    updateUsers();
     console.log('user disconnected');
   });
 
   socket.on('ping', () => {
-    io.emit('ping', {
-      username
-    });
+    io.emit('ping', getUserInfo(user.username));
   });
 
   socket.on('ping-user', (data: { username: string }) => {
-    io.to(data.username).emit('ping', {
-      username
-    });
+    io.to(data.username)
+      .emit('ping-user', getUserInfo(user.username));
   });
 });
 

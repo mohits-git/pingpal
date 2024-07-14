@@ -14,7 +14,10 @@ const verifyLogin = async (req: Request, res: Response) => {
       return res.status(401).json({ error: "Unauthorized" });
     }
 
-    return res.status(200).json({ message: "Authorized" });
+    return res.status(200).json({
+      username: valid.username,
+      message: "Authorized"
+    });
 
   } catch (error) {
     console.log(error);
