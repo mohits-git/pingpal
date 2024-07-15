@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import UserCard from "@/components/user-card";
+import { useModal } from "@/components/providers/modal-provider";
+import CustomModal from "@/components/custom-modal";
 
 type UsersOnline = {
   name: string;
@@ -17,6 +19,7 @@ export default function Ping() {
   const [socketConnection, setSocketConnection] = useState<Socket | null>(null);
   const [users, setUsers] = useState<UsersOnline | null>(null);
   const [username, setUsername] = useState<string | null>(null);
+  const { setOpen } = useModal();
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -67,13 +70,23 @@ export default function Ping() {
       toast(
         `${user.name} pinged ${target}!`,
         {
-          description: "Click here to ping back",
+          description: "Click here to see user profile and ping back",
           action: {
-            label: 'Ping Back 👀',
+            label: 'Profile 👀',
             onClick: () => {
-              socketConnection.emit('ping-user', {
-                username: user.username
-              });
+              const sendPingBack = () => {
+                socketConnection.emit('ping-user', {
+                  username: user.username
+                });
+              }
+              setOpen(
+                <CustomModal>
+                  <UserCard
+                    {...user}
+                    handlePingUser={sendPingBack}
+                  />
+                </CustomModal>
+              );
             }
           }
         }
