@@ -31,9 +31,9 @@ export default function Ping() {
             <div className="w-full flex items-center justify-center">
               <LoadingSpinner />
             </div>
-            <h2 className="text-xl font-semibold w-full">
+            <div className="text-xl font-semibold w-full">
               Connecting to the server 📶...
-            </h2>
+            </div>
             <div className="text-sm text-gray-300">
               The backend is deployed on render.com, so it may take a few seconds (or few minutes) to connect.
             </div>
@@ -43,7 +43,7 @@ export default function Ping() {
     } else {
       setClose();
     }
-  }, [loading, setOpen, setClose]);
+  }, [loading]);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
