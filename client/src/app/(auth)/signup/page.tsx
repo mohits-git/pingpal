@@ -181,8 +181,18 @@ const Signup: React.FC = () => {
               )}
             />
           </CardContent>
-          <CardFooter className="flex justify-between">
+          <CardFooter className="flex flex-col items-center justify-center">
             <Button className="w-full" type="submit">Signup</Button>
+            <div className="text-sm text-gray-300">
+              {"Already have an account?"}{" "}
+              <Button
+                type="button"
+                onClick={() => navigate.push("/login")}
+                variant="link"
+              >
+                Login
+              </Button>
+            </div>
           </CardFooter>
         </form>
       </Form>
