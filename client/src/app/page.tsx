@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import UserCard from "@/components/user-card";
 import { useModal } from "@/components/providers/modal-provider";
 import CustomModal from "@/components/custom-modal";
+import LoadingSpinner from "@/components/loading-spinner";
 
 type UsersOnline = {
   name: string;
@@ -19,7 +20,30 @@ export default function Ping() {
   const [socketConnection, setSocketConnection] = useState<Socket | null>(null);
   const [users, setUsers] = useState<UsersOnline | null>(null);
   const [username, setUsername] = useState<string | null>(null);
-  const { setOpen } = useModal();
+  const { setOpen, setClose } = useModal();
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (loading) {
+      setOpen((
+        <CustomModal>
+          <div className="flex flex-col items-center justify-center space-y-3 text-center">
+            <div className="w-full flex items-center justify-center">
+              <LoadingSpinner />
+            </div>
+            <h2 className="text-xl font-semibold w-full">
+              Connecting to the server 📶...
+            </h2>
+            <div className="text-sm text-gray-300">
+              The backend is deployed on render.com, so it may take a few seconds (or few minutes) to connect.
+            </div>
+          </div>
+        </CustomModal>
+      ))
+    } else {
+      setClose();
+    }
+  }, [loading, setOpen, setClose]);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -29,6 +53,7 @@ export default function Ping() {
     }
 
     const verifyLogin = async () => {
+      setLoading(true);
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/verify-login`,
         {
@@ -46,6 +71,7 @@ export default function Ping() {
 
       const responseData = await response.json();
       setUsername(responseData.username);
+      setLoading(false);
     }
 
     verifyLogin();

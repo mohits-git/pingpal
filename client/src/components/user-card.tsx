@@ -21,7 +21,7 @@ const UserCard: React.FC<Props> = ({ username, name, description, handlePingUser
       <CardHeader>
         <div className="flex justify-between items-center">
           <div className="flex flex-col">
-            <CardTitle>
+            <CardTitle className="text-lg">
               {name}
             </CardTitle>
             <CardDescription>
@@ -40,7 +40,7 @@ const UserCard: React.FC<Props> = ({ username, name, description, handlePingUser
           </div>
         </div>
       </CardHeader>
-      <CardContent>
+      <CardContent className="text-gray-300">
         {description}
       </CardContent>
     </Card>
